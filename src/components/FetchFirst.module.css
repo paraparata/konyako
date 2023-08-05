@@ -1,0 +1,47 @@
+.root {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5%;
+  text-align: center;
+}
+.root h2 {
+  margin: 0;
+  color: var(--sc-midnight);
+  font-size: 1.25rem;
+}
+.root form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.repo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+.repo > input {
+  width: 360px;
+}
+
+.help {
+  padding-top: 10%;
+  color: var(--sc-ocean);
+}
+.help:hover {
+  cursor: help;
+}
+
+@media (max-width: 600px) {
+  .repo > input {
+    width: 100%;
+  }
+}

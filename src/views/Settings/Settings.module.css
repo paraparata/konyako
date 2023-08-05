@@ -1,0 +1,45 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.root *[role='tooltip'] {
+  cursor: help;
+  height: 1rem;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: var(--sc-black);
+  font-size: 0.75rem;
+  line-height: normal;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+.form label {
+  margin: 1.5rem 0 0.5rem 0;
+}
+.from label:nth-of-type(1) {
+  margin-top: 0;
+}
+.form label[for='afterCommand'] {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.form textarea,
+.form input {
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+.form textarea {
+  padding: 1rem 1.5em;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

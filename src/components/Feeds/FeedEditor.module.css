@@ -1,0 +1,48 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1 rem;
+}
+
+.root > div {
+  display: flex;
+  flex: 1;
+}
+.root input,
+.root textarea {
+  flex: 1;
+  font-size: 1rem;
+}
+.root input {
+  color: var(--sc-orange);
+  font-weight: bold;
+  font-family: monospace;
+}
+.root[data-focus='true'] {
+  margin: 1rem 0;
+  /* filter: drop-shadow(  4px 10px blue); */
+}
+
+.content-wrapper {
+  display: flex;
+}
+
+.content {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+.content > span {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translate(-15px, -50%);
+  color: var(--sc-postpurp);
+  font-size: 0.85rem;
+}
+.content textarea {
+  flex: 1;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  resize: none;
+}

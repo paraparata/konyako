@@ -1,0 +1,56 @@
+.root {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: #ffffff;
+  transition: border-color 0.25s;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.root[aria-disabled] > section {
+  opacity: 0.35;
+}
+
+.root section:nth-last-of-type(1) {
+  display: flex;
+  justify-content: space-between;
+  color: var(--sc-candlelight);
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+.root span[data-type="title"],
+.root span[data-type="parent"] {
+  font-size: 0.75rem;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.root span[data-type="title"]:hover,
+.root span[data-type="parent"]:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.root span[data-type="title"] {
+  color: var(--sc-orange);
+}
+.root span[data-type="parent"] {
+  color: var(--sc-purple);
+}
+
+.root div[data-type="tags"] {
+  display: flex;
+  gap: 0.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .root {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+}

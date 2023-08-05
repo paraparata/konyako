@@ -1,0 +1,15 @@
+.loading,
+.no-data {
+  height: 50svh;
+  display: flex;
+  flex-direction: column;
+  place-content: center;
+}
+
+.loading {
+  text-align: center;
+}
+
+.no-data {
+  text-align: center;
+}

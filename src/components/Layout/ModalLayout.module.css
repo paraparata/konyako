@@ -1,0 +1,33 @@
+.root {
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: -webkit-fill-available;
+  padding: 0.75rem 4rem;
+  color: #0f0f0f;
+  background: white;
+  box-shadow: 0 2px 4px var(--sc-nightpurp);
+}
+
+.main {
+  margin-top: calc(65px + 65px);
+  padding: 0 4rem;
+  background-color: var(--sc-night);
+}
+
+@media (prefers-color-scheme: dark) {
+  .header {
+    color: white;
+    background-color: var(--sc-night);
+    /* background-color: #161616; */
+  }
+}

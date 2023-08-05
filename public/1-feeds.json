@@ -1,0 +1,137 @@
+[
+  {
+    "id": "070a29fc-7bd8-4555-b33e-fcb3edce3e7e",
+    "title": "User Interface 🤔",
+    "parent": null,
+    "content": "I just learned this two cool concepts: Retained Mode and Immediate Mode",
+    "tags": null,
+    "created_at": "2023-06-05T11:33:20.198Z",
+    "updated_at": null
+  },
+  {
+    "id": "20455b16-4669-4e14-baa1-4b406312722c",
+    "title": null,
+    "parent": {
+      "id": "070a29fc-7bd8-4555-b33e-fcb3edce3e7e",
+      "title": "User Interface 🤔"
+    },
+    "content": "So far, what I understood from those two are: Retained Mode is a rendering paradigm where re-rendering (looks like) only happened when necessary. Thinks like clicking button in browser triggers some style changes.",
+    "tags": null,
+    "created_at": "2023-06-05T11:34:22.161Z",
+    "updated_at": null
+  },
+  {
+    "id": "e56b600d-7802-41f8-953e-8203f3c52fd0",
+    "title": null,
+    "parent": {
+      "id": "070a29fc-7bd8-4555-b33e-fcb3edce3e7e",
+      "title": "User Interface 🤔"
+    },
+    "content": "While Immediate Mode is a rendering paradigm where re-rendering (looks like) happened continuously. I use the `looks like` term because this mode behind the scene is not re-rendeing continuously, but the users who see it thinks it's like re-rendering continuously.",
+    "tags": null,
+    "created_at": "2023-06-05T11:38:22.639Z",
+    "updated_at": null
+  },
+  {
+    "id": "80191e4c-97ee-47b6-aeaa-26ba1cb5d6f3",
+    "title": null,
+    "parent": {
+      "id": "070a29fc-7bd8-4555-b33e-fcb3edce3e7e",
+      "title": "User Interface 🤔"
+    },
+    "content": "Immediate Mode’s kitchen use something like batching to prevent continuous re-rendering. Because if continuous re-rendering is truly happening, it might burn outing our CPU/GPU really badly. Immediate Mode usually used in game development or something alike.",
+    "tags": null,
+    "created_at": "2023-06-05T11:42:01.592Z",
+    "updated_at": null
+  },
+  {
+    "id": "58223dfe-534f-4a16-945f-d8c69dcc0612",
+    "title": "Dum Dum",
+    "parent": null,
+    "content": "The sum of first `n` natural numbers is:\n`y = n * (n + 1) / 2`",
+    "tags": null,
+    "created_at": "2023-05-25T16:04:24.220Z",
+    "updated_at": null
+  },
+  {
+    "id": "430bed60-4ff7-406a-b06b-34dd9a3c9083",
+    "title": null,
+    "parent": null,
+    "content": "I don’t know but me trying to code in functional paradigm feels like I’ve prevented some bugs to happend",
+    "tags": null,
+    "created_at": "2023-05-22T10:33:55.217Z",
+    "updated_at": null
+  },
+  {
+    "id": "1e882c48-e3da-4647-ae7e-209c4fa2459c",
+    "title": "Alo Dart+Flutter!",
+    "parent": null,
+    "content": "I once learned creating web app with Flutter for my task in college. I remember it still in alpha or beta back then and I had some quite issue with it. After some years, I think now is the right time to relearn it!",
+    "tags": null,
+    "created_at": "2023-05-07T02:11:00.771Z",
+    "updated_at": null
+  },
+  {
+    "id": "931bf045-aa4f-4851-a3dd-940ac7f0eb29",
+    "title": null,
+    "parent": {
+      "id": "1e882c48-e3da-4647-ae7e-209c4fa2459c",
+      "title": "Alo Dart+Flutter!"
+    },
+    "content": "There’s this package called `flutter_hooks` that somehow makes me feels like at home (yap, like `hooks` in React). Declarative is the key 😌",
+    "tags": null,
+    "created_at": "2023-05-07T02:14:56.435Z",
+    "updated_at": null
+  },
+  {
+    "id": "35d9223d-d2c0-4f22-9c30-47b5530fdeec",
+    "title": null,
+    "parent": {
+      "id": "b8955972-9b94-44b0-9518-e04dcc44f1ab",
+      "title": "Feedear’s Journery"
+    },
+    "content": "Thinking is it better to include the feedear web into the editor. This will make setup much easier and not confusing. The trade is the web will be locked into feeadear setup (using astro) and I need to to think how people will customize the styling.",
+    "tags": null,
+    "created_at": "2023-05-05T02:45:42.713Z",
+    "updated_at": null
+  },
+  {
+    "id": "b8955972-9b94-44b0-9518-e04dcc44f1ab",
+    "title": "Feedear’s Journery",
+    "parent": null,
+    "content": "So I’ll use this topic to track feedear changes, improvement and also as a note.",
+    "tags": null,
+    "created_at": "2023-05-01T14:49:55.764Z",
+    "updated_at": null
+  },
+  {
+    "id": "a524ce76-7c7a-4a62-ac26-5fb7a2f51722",
+    "title": null,
+    "parent": {
+      "id": "b8955972-9b94-44b0-9518-e04dcc44f1ab",
+      "title": "Feedear’s Journery"
+    },
+    "content": "feedear's current version still lacking in some important feature like deleting and editing feed properly. The current code is also not looking that nice. Well I’m still new to Rust. Bet that’s the main factor on these issues.",
+    "tags": null,
+    "created_at": "2023-05-01T14:51:55.165Z",
+    "updated_at": null
+  },
+  {
+    "id": "cfb9aff6-78c0-4bad-a786-b11b82d6a582",
+    "title": null,
+    "parent": null,
+    "content": "still, there are a lot of things to improve both from the editor and the feed's site. `Topic` page shows nothing when there’s no data on it is really bothering me.",
+    "tags": null,
+    "created_at": "2023-05-01T08:32:29.820Z",
+    "updated_at": null
+  },
+  {
+    "id": "4d925583-2957-47cf-bebe-8482ac99ee52",
+    "title": null,
+    "parent": null,
+    "content": "Hello there! — generated from feedear",
+    "tags": null,
+    "created_at": "2023-05-01T01:15:16.193Z",
+    "updated_at": null
+  }
+]
