@@ -1,8 +1,8 @@
 import { FeedEditor } from './FeedEditor';
 import { FeedView } from './FeedView';
 
-import type { FeedType } from './feedsStore';
 import type { FeedEditorProps } from './FeedEditor';
+import type { FeedType } from '@libs/useFeeds';
 
 interface FeedProps extends Omit<FeedEditorProps, 'title' | 'content'> {
   mode: 'view' | 'editor';

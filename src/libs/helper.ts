@@ -1,6 +1,8 @@
 export const formatDate = (dateISO: string, separator = '/') => {
   const date = new Date(dateISO);
-  return `${date.getDate()}${separator}${date.getMonth()}${separator}${date.getFullYear()}`;
+  return `${date.getDate()}${separator}${
+    date.getMonth() + 1
+  }${separator}${date.getFullYear()}`;
 };
 
 export const formatPath = (path: string) =>

@@ -1,16 +1,9 @@
 import { Leaf } from 'phosphor-react';
 import { useConfigs } from '@libs/useConfigs';
 import styles from './NewFeedBtn.module.css';
-import { useEffect } from 'react';
-import NewFeed from '@views/EditFeed/EditFeed';
+import EditFeed from '@views/EditFeed/EditFeed';
 
 const NewFeedBtn = () => {
-  const isEditing = useConfigs((state) => state.isEditing);
-
-  useEffect(() => {
-    console.log(isEditing);
-  }, [isEditing]);
-
   return (
     <>
       <button
@@ -20,7 +13,7 @@ const NewFeedBtn = () => {
         <span>New Feed</span>
         <Leaf size={18} weight='duotone' style={{ color: 'var(--sc-green)' }} />
       </button>
-      <NewFeed />
+      <EditFeed />
     </>
   );
 };

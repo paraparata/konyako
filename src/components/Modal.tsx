@@ -4,7 +4,7 @@ import styles from './Modal.module.css';
 interface ModalProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
   okLabel?: string;
   okComponent?: React.ReactNode;
-  onOk?: () => void;
+  onOk?: React.MouseEventHandler<HTMLButtonElement>;
   onCancel?: () => void;
   MainProps?: React.HTMLAttributes<HTMLElement>;
   children: React.ReactNode;

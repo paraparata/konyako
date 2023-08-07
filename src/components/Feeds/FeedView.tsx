@@ -3,7 +3,7 @@ import { forwardRef } from 'react';
 import { formatDate } from '@libs/helper';
 import { NavLink } from '@components/Link';
 
-import type { FeedType } from './feedsStore';
+import type { FeedType } from '@libs/useFeeds';
 
 export interface FeedViewProps {
   data: FeedType;

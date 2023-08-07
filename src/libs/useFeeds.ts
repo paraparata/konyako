@@ -12,8 +12,6 @@ type FeedType = {
   updated_at: null | string;
 };
 
-type EditableFeedType = Pick<FeedType, 'title' | 'content'>;
-
 type FeedStoreState = {
   feeds: FeedType[];
   page: number;
@@ -141,4 +139,4 @@ export {
   checkUpdate,
   reset,
 };
-export type { FeedType, EditableFeedType, FeedStoreState };
+export type { FeedType, FeedStoreState };

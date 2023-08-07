@@ -4,8 +4,8 @@ import './style.css';
 
 import Timeline from './views/Timeline';
 // import FeedById from './views/FeedById';
-// import Topic from './views/Topic';
-// import Settings from './views/Settings';
+import Topic from './views/Topic';
+import Settings from './views/Settings';
 
 import { Redirect, Route, Switch } from 'wouter';
 import Layout from '@components/Layout';
@@ -20,8 +20,8 @@ const App = () => (
           params.id ? <FeedById id={params.id} /> : <Redirect to='/404' />
         }
       /> */}
-      {/* <Route path='/topic' component={Topic} />
-      <Route path='/settings' component={Settings} /> */}
+      <Route path='/topic' component={Topic} />
+      <Route path='/settings' component={Settings} />
       <Route>404, Not Found!</Route>
     </Switch>
   </Layout>

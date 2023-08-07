@@ -1,7 +1,6 @@
 import { produce } from 'immer';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 import type { FeedType } from './useFeeds';
 
@@ -36,14 +35,10 @@ const initFeed = (id: string): FeedType => ({
 
 const DEFAULT_STATES: EditorStoreState = {
   activeIndex: 0,
-  draft: [],
+  draft: [initFeed(nanoid())],
 };
 
-const useEditor = create<EditorStoreState>()(
-  persist(() => DEFAULT_STATES, {
-    name: 'konyako-sand-bag',
-  })
-);
+const useEditor = create<EditorStoreState>()(() => DEFAULT_STATES);
 
 const setActiveIndex: EditorStoreAction['setActiveIndex'] = (activeIndex) =>
   useEditor.setState({ activeIndex });

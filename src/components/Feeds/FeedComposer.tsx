@@ -4,7 +4,7 @@ import { Leaf } from 'phosphor-react';
 interface FeedComposerProps {
   multiple?: boolean;
   disableSave?: boolean;
-  onSave?: () => void;
+  onSave?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export const FeedComposer: React.FC<FeedComposerProps> = ({

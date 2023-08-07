@@ -1,34 +1,60 @@
 import Modal from '@components/Modal';
-import { Feed, FeedComposer } from '@components/Feeds';
+import React, { Fragment, useEffect } from 'react';
+import { Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { Editor } from './Editor';
+import { FeedComposer, FeedView } from '@components/Feeds';
 import { List } from '@components/List';
 import { useConfigs } from '@libs/useConfigs';
 import {
-  addNewFeed,
-  deleteFeed,
-  editFeed,
-  setActiveIndex,
-  useEditor,
-} from '@libs/useEditor';
+  activeIndexAtom,
+  draftAtom,
+  feedAtomFamily,
+  initEditorAtom,
+  isComposerSaveDisabledAtom,
+  staticFeedsAtom,
+} from '@libs/useEditorV2';
+import type { FeedType } from '@libs/useFeeds';
+import type { FeedViewProps } from '@components/Feeds/FeedView';
 
-const NewFeed = () => {
-  const [draft, activeIndex] = useEditor((state) => [
-    state.draft,
-    state.activeIndex,
-  ]);
+interface FeedViewAtomicProps extends Omit<FeedViewProps, 'data'> {
+  feedId: FeedType['id'];
+}
 
+const FeedViewAtomic: React.FC<FeedViewAtomicProps> = ({
+  feedId,
+  ...props
+}) => {
+  const feed = useAtomValue(feedAtomFamily(feedId));
+  return <FeedView data={feed} {...props} />;
+};
+
+interface EditFeedProps {
+  feedIds?: FeedType['id'][];
+  feeds?: Record<string, FeedType>;
+}
+
+const EditFeed: React.FC<EditFeedProps> = ({ feedIds, feeds }) => {
   const isEditing = useConfigs((state) => state.isEditing);
+  const isComposerSaveDisabled = useAtomValue(isComposerSaveDisabledAtom);
+  const draft = useAtomValue(draftAtom);
+  const initEditor = useSetAtom(initEditorAtom);
+  const staticFeeds = useSetAtom(staticFeedsAtom);
 
-  const handleOnAddFeed = () => {
-    if (draft[activeIndex].content) addNewFeed();
-  };
+  const [activeIndex, setActiveIndex] = useAtom(activeIndexAtom);
 
-  const handleOnDelete = () => {
-    if (activeIndex !== 0) deleteFeed();
-  };
+  useEffect(() => {
+    if (feedIds && feeds) {
+      initEditor({ feedIds, feeds });
+    }
+  }, [feedIds, feeds]);
 
-  const handleOnSave = async () => {
-    console.log('saved');
-    useConfigs.setState(() => ({ isEditing: false }));
+  const handleOnSave: React.MouseEventHandler<HTMLButtonElement> = async (
+    e
+  ) => {
+    e.preventDefault();
+    const feeds = staticFeeds();
+    console.log(draft, feeds);
+    // useConfigs.setState(() => ({ isEditing: false }));
   };
 
   const handleOnCancel = async () => {
@@ -40,39 +66,51 @@ const NewFeed = () => {
     <Modal
       open={isEditing}
       onCancel={handleOnCancel}
-      onOk={handleOnSave}
       okComponent={
         <FeedComposer
           multiple={draft.length > 1}
-          disableSave={draft.some((feed) => feed.content === '')}
-          onSave={handleOnSave}
+          disableSave={isComposerSaveDisabled}
+          onSave={(e) => {
+            console.log('ngana lipa');
+            handleOnSave(e);
+          }}
         />
       }
       MainProps={{
-        style: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+        style: { display: 'flex', flexDirection: 'column', gap: '0.75rem' },
       }}
     >
       <List data={draft}>
         {(data) =>
-          data.map((feed, index) => (
-            <Feed
-              key={index}
-              mode={activeIndex === index ? 'editor' : 'view'}
-              data={feed}
-              isFocusing={index !== 0 && index === activeIndex}
-              disabled={activeIndex !== index}
-              onChange={(key, val) => editFeed(index, key, val)}
-              onViewClick={() => setActiveIndex(index)}
-              disableAdd={!draft[activeIndex].content}
-              disableDelete={activeIndex === 0}
-              onAddNew={handleOnAddFeed}
-              onDelete={handleOnDelete}
-            />
-          ))
+          data.map((feedId, index) => {
+            return (
+              <Fragment key={feedId}>
+                {activeIndex === index ? (
+                  <Editor
+                    feedId={feedId}
+                    isFocusing={index !== 0 && index === activeIndex}
+                    noTitle={index !== 0}
+                  />
+                ) : (
+                  <FeedViewAtomic
+                    feedId={feedId}
+                    disabled={activeIndex !== index}
+                    onClick={() => setActiveIndex(index)}
+                  />
+                )}
+              </Fragment>
+            );
+          })
         }
       </List>
     </Modal>
   );
 };
 
-export default NewFeed;
+const EditFeedWrapper: React.FC<EditFeedProps> = (props) => (
+  <Provider>
+    <EditFeed {...props} />
+  </Provider>
+);
+
+export default EditFeedWrapper;

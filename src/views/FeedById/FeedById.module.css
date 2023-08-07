@@ -1,0 +1,18 @@
+.root {
+  margin-bottom: 4rem;
+  padding: 0 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.add-feed-btn {
+  width: 100%;
+  padding: 2rem 0;
+  background: #2c381e2d;
+  border: thin solid #9ece6a2d;
+}
+.add-feed-btn:hover {
+  background: #2c381e8c;
+  outline: thin solid var(--sc-tosca);
+}

@@ -1,8 +1,10 @@
 import { FeedView } from '@components/Feeds';
 import { useEffect, useRef, useState } from 'react';
 
-import type { FeedType } from '@components/Feeds';
-import AddFeedWrapper from './AddFeed';
+import { FeedType } from '@libs/useFeeds';
+import styles from './FeedById.module.css';
+import { useConfigs } from '@libs/useConfigs';
+import EditFeed from '@views/EditFeed/EditFeed';
 
 interface FeedByIdProps {
   id: string;
@@ -23,7 +25,6 @@ const FeedViewWrapper = ({ data }: { data: FeedType }) => {
 
 const FeedById: React.FC<FeedByIdProps> = ({ id }) => {
   const [feeds, setFeeds] = useState<FeedType[]>([]);
-  const [isAddFeedOpen, setIsAddFeedOpen] = useState(false);
 
   useEffect(() => {
     const fetcher = async () => {
@@ -47,11 +48,13 @@ const FeedById: React.FC<FeedByIdProps> = ({ id }) => {
         <FeedViewWrapper key={index} data={feed} />
       ))}
 
-      <AddFeedWrapper
-        initData={feeds}
-        open={isAddFeedOpen}
-        toggleOpen={() => setIsAddFeedOpen(!isAddFeedOpen)}
-      />
+      <button
+        className={styles['add-feed-btn']}
+        onClick={() => useConfigs.setState(() => ({ isEditing: true }))}
+      >
+        + Add feed
+      </button>
+      <EditFeed />
     </div>
   );
 };

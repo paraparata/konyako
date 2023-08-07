@@ -3,7 +3,8 @@ import { FeedToolbar } from './FeedToolbar';
 
 import styles from './FeedEditor.module.css';
 import type { FeedToolbarProps } from './FeedToolbar';
-import type { EditableFeedType, FeedType } from './feedsStore';
+import type { FeedType } from '@libs/useFeeds';
+import type { EditableFeedType } from '@libs/useEditor';
 
 const MAX_CHAR = 300;
 
