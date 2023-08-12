@@ -1,0 +1,63 @@
+    <html lang='en'>
+      <head>
+        <meta charSet='UTF-8' />
+        <meta name='viewport' content='width=device-width' />
+        <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+        <link rel="stylesheet" href="/assets/style.css" />
+        
+        <title>Hello World</title>
+      </head>
+      <body data-theme='light'>
+            <header>
+      <nav>
+        <ul>
+          <li>
+            <button id="theme-toggler">🔆</button>
+          </li>
+          <li>
+            <a href="../feeds/feeds/">Feeds</a>
+          </li>
+          <li>
+            <a href="../feeds/feeds/topics/">Topics</a>
+          </li>
+          <li class="goto-homepage">
+            <span>|</span>
+            <a href="/">Homepage</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  
+        <main>    <article id="hello-world" class="feed" data-order="">
+      <section class="feed_data">
+            <a href="../feeds/feeds/hello-world" role="prefetch">
+      <h3>
+        <b>[Hello World]</b>
+      </h3>
+    </a>
+   <p>This is feed one</p>
+      </section>
+      <section class="feed_meta">
+        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+      </section>
+    </article>
+      <article id="hello-world" class="feed" data-order="">
+      <section class="feed_data">
+         <p>This is feed two lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+      </section>
+      <section class="feed_meta">
+        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+      </section>
+    </article>
+      <article id="hello-world" class="feed" data-order="">
+      <section class="feed_data">
+         <p>another feed <br/> lohe</p>
+      </section>
+      <section class="feed_meta">
+        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+      </section>
+    </article>
+  </main>
+      </body>
+    </html>
+  
