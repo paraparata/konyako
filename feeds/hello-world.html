@@ -1,13 +1,14 @@
-    <html lang='en'>
+    <html lang="en">
       <head>
-        <meta charSet='UTF-8' />
-        <meta name='viewport' content='width=device-width' />
-        <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="stylesheet" href="/assets/style.css" />
+        <script src="/assets/index.js" defer></script>
         
         <title>Hello World</title>
       </head>
-      <body data-theme='light'>
+      <body data-theme="light">
             <header>
       <nav>
         <ul>
@@ -15,10 +16,7 @@
             <button id="theme-toggler">🔆</button>
           </li>
           <li>
-            <a href="../feeds/feeds/">Feeds</a>
-          </li>
-          <li>
-            <a href="../feeds/feeds/topics/">Topics</a>
+            <a href="/feeds/">Feeds</a>
           </li>
           <li class="goto-homepage">
             <span>|</span>
@@ -28,33 +26,41 @@
       </nav>
     </header>
   
-        <main>    <article id="hello-world" class="feed" data-order="">
+        <main>    <article id="hello-world.html" class="feed" data-order="">
       <section class="feed_data">
-            <a href="../feeds/feeds/hello-world" role="prefetch">
+            <a href="/feeds/hello-world.html" role="prefetch">
       <h3>
         <b>[Hello World]</b>
       </h3>
     </a>
-   <p>This is feed one</p>
+   <p>This is feed one </p>
       </section>
       <section class="feed_meta">
-        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+        <time>16:49 13 Aug 2023</time>
       </section>
     </article>
-      <article id="hello-world" class="feed" data-order="">
+      <article id="hello-world.html" class="feed" data-order="">
       <section class="feed_data">
-         <p>This is feed two lorem ipsum dolor sit amet lorem ipsum dolor sit amet</p>
+         <p>This is feed two lorem ipsum dolor sit amet lorem ipsum dolor sit amet </p>
       </section>
       <section class="feed_meta">
-        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+        <time>16:49 13 Aug 2023</time>
       </section>
     </article>
-      <article id="hello-world" class="feed" data-order="">
+      <article id="hello-world.html" class="feed" data-order="">
       <section class="feed_data">
-         <p>another feed <br/> lohe</p>
+         <p>another feed <br/> lohe </p>
       </section>
       <section class="feed_meta">
-        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+        <time>16:49 13 Aug 2023</time>
+      </section>
+    </article>
+      <article id="hello-world.html" class="feed" data-order="">
+      <section class="feed_data">
+         <p>nga pe </p>
+      </section>
+      <section class="feed_meta">
+        <time>17:05 13 Aug 2023</time>
       </section>
     </article>
   </main>

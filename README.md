@@ -1,3 +1,3 @@
 # konyako
 
-(trying to be) simple micro blog in timeline order
+(trying to be) simple micro blogging in (not so) timeline order

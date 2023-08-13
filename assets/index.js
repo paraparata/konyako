@@ -3,6 +3,8 @@ const theme = localStorage.getItem(KEY);
 const preferDark = window.matchMedia("(prefers-color-scheme: dark)");
 const themeToggler = document.querySelector("#theme-toggler");
 
+console.log(themeToggler, "logged");
+
 const changeThemeIcon = (dark) => (dark ? "🌙" : "🔆");
 
 if (themeToggler) {

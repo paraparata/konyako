@@ -39,6 +39,10 @@ local check_feeds_status = function(command_name)
   return lines
 end
 
+local get_date = function()
+  return string.format("%s", os.date("%H:%M %d %h %Y"))
+end
+
 -- =====
 -- parser
 -- =====
@@ -78,17 +82,26 @@ local parse_to_html = function(cleaned_feed)
   return string.format("<%s>%s</%s>", tag, content, tag)
 end
 
-local parser = function(lines)
+local parser = function(lines, file)
   local data = { title = nil, feeds = {} }
   local last_index = nil
+  local write_date = io.open(file, "w")
+  local date_written = false;
 
-  for _, v in pairs(lines) do
+  for k, v in ipairs(lines) do
     if not is_empty(v) and get_tag(v) then
       if get_tag(v) == 'h1' and data.title == nil then
         data.title = trim(remove_tag(v))
       else
         if last_index then
           data.feeds[last_index] = data.feeds[last_index] .. " " .. clean_markdown(v)
+
+          if not string.match(v, "<time*.*</time>") and lines[k + 1] == "" then
+            print(k, v)
+            local _date = string.format("\n> <time>%s</time>", get_date())
+            if write_date then write_date:write("> " .. trim(remove_tag(v)) .. _date .. "\n") end
+            date_written = true
+          end
         else
           table.insert(data.feeds, v)
           last_index = table_len(data.feeds)
@@ -97,7 +110,14 @@ local parser = function(lines)
     else
       last_index = nil
     end
+
+    if not date_written then
+      if write_date then write_date:write(v .. "\n") end
+      date_written = false
+    end
   end
+  if write_date then write_date:close() end
+
 
   for k, v in ipairs(data.feeds) do
     data.feeds[k] = parse_to_html(v)
@@ -110,8 +130,13 @@ end
 -- html constructor
 -- =====
 local feed_htm = function(base_url, id, order, title, content)
+  local has_date = string.match(content, "<time*.*</time>") and
+      string.match(content, "<time*.*</time>") or nil
+  local date = has_date and has_date or string.format("<time>%s</time>", get_date())
+
+  local _content = string.gsub(content, "<time*.*</time>", "")
   local title_htm = string.format([[
-    <a href="%s/feeds/%s" role="prefetch">
+    <a href="%s/%s" role="prefetch">
       <h3>
         <b>[%s]</b>
       </h3>
@@ -123,10 +148,10 @@ local feed_htm = function(base_url, id, order, title, content)
         %s %s
       </section>
       <section class="feed_meta">
-        <time dateTime={data.created_at}>{formatDate(data.created_at)}</time>
+        %s
       </section>
     </article>
-  ]], id, order, is_empty(title) and "" or title_htm, content)
+  ]], id, order, is_empty(title) and "" or title_htm, _content, date)
 
   return template
 end
@@ -163,10 +188,7 @@ local header_htm = function(base_url)
             <button id="theme-toggler">🔆</button>
           </li>
           <li>
-            <a href="%s/feeds/">Feeds</a>
-          </li>
-          <li>
-            <a href="%s/feeds/topics/">Topics</a>
+            <a href="%s/">Feeds</a>
           </li>
           <li class="goto-homepage">
             <span>|</span>
@@ -181,16 +203,17 @@ end
 
 local layout_htm = function(meta, title, header, main)
   local template = string.format([[
-    <html lang='en'>
+    <html lang="en">
       <head>
-        <meta charSet='UTF-8' />
-        <meta name='viewport' content='width=device-width' />
-        <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="stylesheet" href="/assets/style.css" />
+        <script src="/assets/index.js" defer></script>
         %s
         <title>%s</title>
       </head>
-      <body data-theme='light'>
+      <body data-theme="light">
         %s
         <main>%s</main>
       </body>
@@ -210,16 +233,35 @@ end
 -- setup
 -- =====
 local FEEDS_DIR = './feeds'
-local SITE_DIR = '../feeds'
+local HTML_DIR = '../feeds'
+local BASE_URL = '/feeds'
 local git_check_command = string.format('git ls-files -mo --exclude-from=../.gitignore %s', FEEDS_DIR)
+local timeline_main = ""
+
+print("\t:: konyako ::\n")
+print("[?] Check new/modified feeds markdown")
 
 for k, file in pairs(check_feeds_status(git_check_command)) do
   local lines = lines_from(file)
-  local feeds_table = parser(lines)
-  local feeds_id = string.gsub(string.match(file, "([^/]+)$"), ".md", "")
-  local html = construct(SITE_DIR, feeds_id, feeds_table)
-  local html_file = io.open(string.format("%s/%s.html", SITE_DIR, feeds_id), 'w')
-  html_file:write(html)
-  html_file:close()
+  local feeds_table = parser(lines, file)
+  local feeds_id = string.gsub(string.match(file, "([^/]+)$"), ".md", ".html")
+  local html = construct(BASE_URL, feeds_id, feeds_table)
+  local html_file = io.open(string.format("%s/%s", HTML_DIR, feeds_id), 'w')
+  if html_file then
+    html_file:write(html)
+    html_file:close()
+  end
+
+  timeline_main = timeline_main .. feed_htm(BASE_URL, feeds_id, "", feeds_table.title, feeds_table.feeds[1])
+
   print(string.format("[%s][**Done**] %s", k, file))
+end
+
+local timeline_html = layout_htm("", "Timeline", header_htm(BASE_URL),
+  timeline_main)
+local timeline_file = io.open(string.format("%s/%s.html", HTML_DIR, "index"), 'w')
+if timeline_file then
+  timeline_file:write(timeline_html)
+  timeline_file:close()
+  print("\n[#][**Done**] Feeds Timeline")
 end
