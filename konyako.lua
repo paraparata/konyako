@@ -256,10 +256,12 @@ local layout_htm = function(meta, title, header, main)
         <script src="/assets/feeds.js" defer></script>
         %s
         <title>%s</title>
+        <link rel="stylesheet" href="/assets/prism.css"/>
       </head>
       <body data-theme="light">
         %s
         <main>%s</main>
+        <script src="/assets/prism.js"></script>
       </body>
     </html>
   ]], meta, title, header, main)

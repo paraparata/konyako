@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 )
@@ -74,43 +72,4 @@ func (k *Konyako) CheckModified() ([]string, error) {
 	}
 	cmd.Wait()
 	return paths, nil
-}
-
-func main() {
-	fmt.Println("\t:: konyako ::")
-	fmt.Printf("[?] Check new/modified feeds markdown\n\n")
-
-	konyako := Konyako{
-		FeedsDirSrc: "./feeds",
-		HTMLDir:     "../feeds",
-		BaseUrl:     "/feeds",
-		Meta: SiteMeta{
-			Name: "konyako",
-			Desc: "A blog for feeding feed",
-		},
-	}
-
-	paths, err := konyako.CheckModified()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for i, path := range paths {
-		contents, err := konyako.ReadLine(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for i, content := range contents {
-			fmt.Printf("line %d: %s\n", i, content)
-		}
-		fmt.Printf("[%d][**Done**] %s\n", i, path)
-	}
-
-	fmt.Println("=====")
-	meta := ""
-	header := ""
-	main := ""
-	layout := Layout(meta, konyako.Meta.Name, header, main)
-	fmt.Print(layout)
 }

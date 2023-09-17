@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func Layout(meta string, title string, header string, main string) string {
+func LayoutHtm(meta string, title string, header string, main string) string {
 	template := `
 	<html lang="en">
 		<head>
@@ -25,7 +25,7 @@ func Layout(meta string, title string, header string, main string) string {
 	return fmt.Sprintf(template, meta, title, header, main)
 }
 
-func Meta(name, desc, title string) string {
+func MetaHtm(name, desc, title string) string {
 	template := `
 	<meta name="twitter:card" content="summary">
 	<meta name="og:title" content="%[1]s">
@@ -36,7 +36,7 @@ func Meta(name, desc, title string) string {
 	return fmt.Sprintf(template, title, name, desc)
 }
 
-func Header(baseUrl string) string {
+func HeaderHtm(baseUrl string) string {
 	template := `
 	<header>
 		<nav>
@@ -58,7 +58,7 @@ func Header(baseUrl string) string {
 	return fmt.Sprintf(template, baseUrl)
 }
 
-func Feeds(baseUrl string, id string, title string, feeds []string) string {
+func FeedsHtm(baseUrl string, id string, title string, feeds []string) string {
 	emptyTemplate := `
 	<p style="margin-top: 3rem; color: coral; text-align: center">
 		x_x
@@ -76,25 +76,29 @@ func Feeds(baseUrl string, id string, title string, feeds []string) string {
 	return template
 }
 
-func Feed(baseUrl string, id string, title string, content string, isTimeline bool) string {
-	titleTemplate := `
-	<a href="%s/%s" role="prefetch">
+func FeedTitleHtm(baseUrl, id, title string) string {
+	titleTemplate := fmt.Sprintf(`
+	<a href="%[1]s/%[2]s" role="prefetch">
 		<h3>
-			<b>[%s]</b>
+			<b>[%[3]s]</b>
 		</h3>
 	</a>
-	`
+	`, baseUrl, id, title)
 
-	template := `
-	<article id="%s" class="feed" data-order="%s">
+	return titleTemplate
+}
+
+func FeedHtm(title, content, date string) string {
+	template := fmt.Sprintf(`
+	<article class="feed">
 		<section class="feed_data">
-			%s %s
+			%[1]s %[2]s
 		</section>
 		<section class="feed_meta">
-			%s
+			%[3]s
 		</section>
 	</article>
-	`
+	`, title, content, date)
 
 	return template
 }
