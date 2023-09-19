@@ -1,5 +1,13 @@
 package main
 
+import "fmt"
+
+func main() {
+	fmt.Println("Hello")
+}
+
+/* package main
+
 import (
 	"fmt"
 	"log"
@@ -58,4 +66,4 @@ func main() {
 		fmt.Println(GetDate("<time>22:18 21 Aug 2023</time>"))
 
 	}
-}
+} */
