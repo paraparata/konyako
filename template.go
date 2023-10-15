@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func LayoutHtm(meta string, title string, header string, main string) string {
 	template := `
@@ -39,7 +42,7 @@ func MetaHtm(name, desc, title string) string {
 func HeaderHtm(baseUrl string) string {
 	template := `
 	<header>
-		<nav>
+	        <nav>
 			<ul>
 				<li>
 					<button id="theme-toggler">🔆</button>
@@ -58,7 +61,7 @@ func HeaderHtm(baseUrl string) string {
 	return fmt.Sprintf(template, baseUrl)
 }
 
-func FeedsHtm(baseUrl string, id string, title string, feeds []string) string {
+func ListHtm(baseUrl string, feeds [][]byte) string {
 	emptyTemplate := `
 	<p style="margin-top: 3rem; color: coral; text-align: center">
 		x_x
@@ -71,7 +74,13 @@ func FeedsHtm(baseUrl string, id string, title string, feeds []string) string {
 		return emptyTemplate
 	}
 
-	template := ""
+	feedSlices := []string{}
+	for _, feed := range feeds {
+		feedHtm := FeedHtm(string(feed), "")
+		feedSlices = append(feedSlices, feedHtm)
+	}
+
+	template := strings.Join(feedSlices, "")
 
 	return template
 }
@@ -88,17 +97,17 @@ func FeedTitleHtm(baseUrl, id, title string) string {
 	return titleTemplate
 }
 
-func FeedHtm(title, content, date string) string {
+func FeedHtm(content, date string) string {
 	template := fmt.Sprintf(`
 	<article class="feed">
 		<section class="feed_data">
-			%[1]s %[2]s
+			%[1]s
 		</section>
 		<section class="feed_meta">
-			%[3]s
+			%[2]s
 		</section>
 	</article>
-	`, title, content, date)
+	`, content, date)
 
 	return template
 }

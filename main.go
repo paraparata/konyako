@@ -1,69 +1,41 @@
 package main
 
-import "fmt"
-
-func main() {
-	fmt.Println("Hello")
-}
-
-/* package main
-
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 func main() {
-	fmt.Println("\t:: konyako ::")
-	fmt.Printf("[?] Check new/modified feeds markdown\n\n")
-
-	konyako := Konyako{
-		FeedsDirSrc: "./feeds",
-		HTMLDir:     "../feeds",
-		BaseUrl:     "/feeds",
+	konya := Konyako{
+		FeedSrcDir: "./srcf",
+		OutputDir:  "./output",
 		Meta: SiteMeta{
-			Name: "konyako",
-			Desc: "A blog for feeding feed",
+			Name: "Test",
+			Desc: "Test desc",
 		},
 	}
 
-	paths, err := konyako.CheckModified()
+	modifiedPaths, err := konya.CheckModified()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, path := range paths {
-		contents, err := konyako.ReadLine(path)
+	for _, path := range modifiedPaths {
+		data, err := os.ReadFile(path)
 		if err != nil {
 			log.Fatal(err)
 		}
+		topic := ParseTopic(data)
+		html := konya.ComposeHtml(topic)
+		fileName := strings.Replace(filepath.Base(path), ".md", ".html", 1)
+		outputPath := filepath.Join(".", konya.OutputDir, fileName)
 
-		topic := Topic{}
-		blocks := konyako.ToBlocks(contents)
-		for _, block := range blocks {
-			feed := Feed{}
-			for _, fragment := range block {
-				feed.content += " " + strings.TrimPrefix(fragment, "> ")
-				if GrabTitle(block) != "" {
-					topic.title = GrabTitle(block)
-					feed.title = GrabTitle(block)
-				}
-			}
-			topic.feeds = append(topic.feeds, feed)
+		if err := os.WriteFile(outputPath, []byte(html), 0666); err != nil {
+			log.Fatal(err)
 		}
-
-		fmt.Printf("Id: %s\nTitle: %s\nFeeds:\n", topic.id, topic.title)
-		for i, feed := range topic.feeds {
-			fmt.Printf("Feed %d: (title => %s)\n", i, feed.title)
-			fmt.Printf("Content:\n%s\n\n", feed.content)
-		}
-
-		fmt.Printf("\n")
-
-		id := GenerateId("Tentang Manusia yang Berubah Wujud Menjadi Salmon")
-		fmt.Println(id)
-		fmt.Println(GetDate("<time>22:18 21 Aug 2023</time>"))
-
+		fmt.Println(outputPath)
 	}
-} */
+}
