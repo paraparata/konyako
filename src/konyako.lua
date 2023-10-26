@@ -158,13 +158,13 @@ local feed_htm = function(base_url, id, order, title, content, is_timeline)
   end
 
   if is_timeline then
-    footer = string.format([[
-      <a href="%s/%s" role="prefetch">
-        read more..
-      </a>
-    ]], base_url, id)
+    footer = ""
   else
-    footer = date
+    footer = string.format([[
+      <section class="feed_meta">
+        %s
+      </section>
+    ]], date)
   end
 
   local _content = string.gsub(content, "<time*.*</time>", "")
@@ -176,15 +176,13 @@ local feed_htm = function(base_url, id, order, title, content, is_timeline)
     </a>
   ]], base_url, id, title)
   local template = string.format([[
-    <article id="%s" class="feed" data-order="%s">
+    <article class="feed" data-order="%s">
       <section class="feed_data">
         %s %s
       </section>
-      <section class="feed_meta">
-        %s
-      </section>
+      %s
     </article>
-  ]], id, order, is_empty(title) and "" or title_htm, _content, footer)
+  ]], order, is_empty(title) and "" or title_htm, _content, footer)
 
   return template
 end
@@ -221,7 +219,7 @@ local header_htm = function(base_url)
             <button id="theme-toggler">🔆</button>
           </li>
           <li>
-            <a href="%s/">Feeds</a>
+            <a href="%s/">Topics</a>
           </li>
           <li class="goto-homepage">
             <span>|</span>
@@ -245,13 +243,12 @@ local meta_htm = function(name, desc, title)
   return meta
 end
 
-local layout_htm = function(meta, title, header, main)
+local layout_htm = function(name, meta, title, header, main)
   local template = string.format([[
     <html lang="en">
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="stylesheet" href="/assets/feeds.css" />
         <script src="/assets/feeds.js" defer></script>
         %s
@@ -260,9 +257,13 @@ local layout_htm = function(meta, title, header, main)
       <body data-theme="light">
         %s
         <main>%s</main>
+        <footer>
+          <p><em>%s</em> — Baked with konyako</p>
+          <p>Updated on: %s</p>
+        </footer>
       </body>
     </html>
-  ]], meta, title, header, main)
+  ]], meta, title, header, main, name, get_date())
   return template
 end
 
@@ -270,7 +271,7 @@ local construct = function(base_url, id, data_table, name, desc)
   local header = header_htm(base_url)
   local main = feeds_htm(base_url, id, data_table.title, data_table.feeds)
   local meta = meta_htm(name, desc, data_table.title)
-  local layout = layout_htm(meta, data_table.title, header, main)
+  local layout = layout_htm(name, meta, data_table.title, header, main)
   return layout
 end
 
@@ -311,7 +312,7 @@ for key, value in pairs(timeline_list) do
   end
 end
 
-local timeline_html = layout_htm(meta_htm(NAME, DESC, "Timeline"), "Timeline", header_htm(BASE_URL),
+local timeline_html = layout_htm(NAME, meta_htm(NAME, DESC, "Timeline"), "Timeline", header_htm(BASE_URL),
   timeline_main)
 local timeline_file = io.open(string.format("%s/%s.html", HTML_DIR, "index"), 'w')
 
@@ -320,3 +321,4 @@ if timeline_file then
   timeline_file:close()
   print("\n[#][**Done**] Feeds Timeline")
 end
+
