@@ -36,25 +36,9 @@ navLinkEl.forEach((linkEl) => {
   }
 });
 
-const timeEls = document.querySelectorAll("time[datetime]");
-timeEls.forEach((timeEl) => {
-  const datetime = timeEl.getAttribute("datetime");
-  if (datetime) {
-    let date = "";
-    try {
-      date = new Date(datetime).toLocaleString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZoneName: "shortOffset",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-    } catch (err) {
-      date = "";
-      console.error(err);
-    } finally {
-      timeEl.innerHTML = date;
-    }
-  }
-});
+const sortSectionsEl = document.querySelector("select#sort-sections");
+const mainEl = document.querySelector("main");
+sortSectionsEl.onchange = (e) => {
+  console.log(e.target.value);
+  mainEl.className = e.target.value === "oldest" ? "r-sections" : "";
+};
