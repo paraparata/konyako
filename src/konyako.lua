@@ -1,195 +1,252 @@
+local md = require("md")
 local ok, re = pcall(require, "re")
 if not ok then
 	re = require("lulpeg").re
 end
 
-local M = {}
+-- =====
+-- utils
+-- =====
 
--- https://stackoverflow.com/questions/41942289/display-contents-of-tables-in-lua
-function M.tprint(tbl, indent)
-	if not indent then
-		indent = 0
+local split = function(inputstr, sep)
+	if sep == nil then
+		sep = "%s"
 	end
-	local toprint = string.rep(" ", indent) .. "{\r\n"
-	indent = indent + 2
-	for k, v in pairs(tbl) do
-		toprint = toprint .. string.rep(" ", indent)
-		if type(k) == "number" then
-			toprint = toprint .. "[" .. k .. "] = "
-		elseif type(k) == "string" then
-			toprint = toprint .. k .. "= "
+	local t = {}
+	for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
+		table.insert(t, str)
+	end
+	return t
+end
+
+local check_feeds_status = function(command_name)
+	local process = io.popen(command_name)
+	if process == nil then
+		return {}
+	end
+
+	local lines = {}
+	for line in process:lines() do
+		lines[#lines + 1] = line
+	end
+
+	return lines
+end
+
+local scandir = function(directory)
+	local i, t = 0, {}
+	local pfile = io.popen('ls -a "' .. directory .. '"')
+	if pfile then
+		for filename in pfile:lines() do
+			i = i + 1
+			t[i] = filename
 		end
-		if type(v) == "number" then
-			toprint = toprint .. v .. ",\r\n"
-		elseif type(v) == "string" then
-			toprint = toprint .. '"' .. v .. '",\r\n'
-		elseif type(v) == "table" then
-			toprint = toprint .. M.tprint(v, indent + 2) .. ",\r\n"
-		else
-			toprint = toprint .. '"' .. tostring(v) .. '",\r\n'
-		end
+		pfile:close()
 	end
-	toprint = toprint .. string.rep(" ", indent - 2) .. "}"
-	return toprint
+	return t
 end
 
-local function _encode_uri_char(char)
-	return string.format("%%%0X", string.byte(char))
+local get_utc = function()
+	local utc = os.date("!%Y-%m-%dT%H:%M:%SZ", os.time())
+	return string.format("%s", utc)
 end
 
-local function trim(s)
-	return s:match("^%s*(.-)%s*$")
-end
-
--- https://stackoverflow.com/questions/78225022/is-there-a-lua-equivalent-of-the-javascript-encodeuri-function
-function M.encode_uri(uri)
-	return (string.gsub(trim(uri), "[^%a%d%-_%.!~%*'%(%);/%?:@&=%+%$,#]", _encode_uri_char))
-end
-
-local function class_str(cls)
-	if cls then
-		return string.format(' class="%s"', cls)
+local read_md = function(file)
+	local f = io.open(file, "rb")
+	if not f then
+		return ""
 	end
-	return ""
-end
 
-local function construct_id(s)
-	s = trim(s)
-	s = s:gsub("[^%w%s]+", "")
-	s = s:gsub("%s", "-")
-	return s
-end
+	local content = f:read("*a")
+	local html = md.convert(content, {})
+	f:close()
 
-local function construct_a(t, classes)
-	local lt = ""
-	if t.title then
-		lt = ' title="' .. t.title .. '"'
-	end
-	return string.format('<a href="%s"%s%s>%s</a>', M.encode_uri(t.url), class_str(classes.a), lt, t.txt)
-end
-
--- https://gammon.com.au/lpeg#using-the-re-module-for-describing-a-grammar
--- https://www.inf.puc-rio.br/~roberto/lpeg/re.html
--- Credit to original parser: https://github.com/rokf/lua-md2html
-function M.convert(md, classes)
-	local pattern = re.compile(
+	local toolbar = string.format(
 		[[
-  default <- {| (title / section / %nl)* |} -> join
-  section <- {| h2 %nl+ (heading / list / ml_code / hr / quote / (!h2 para) / %nl)* |} -> concat_section
-  list <- ulist / olist
-  ulist <- {| ([-+] %s+ {| (formatter / { [^%nl] } )+ |} -> concat_line %nl)+ |} -> to_ulist
-  olist <- {| ([0-9]+ '.' %s+ {| (formatter / { [^%nl] } )+ |} -> concat_line %nl)+ |} -> to_olist
-  para <- {| paraline+ |} -> concat
-  formatter <- link / b / i / ub / ui / s / sl_code / timestamp
-  paraline <- {| (img / link / b / i / ub / ui / s / sl_code / timestamp / text)+ %nl |} -> concat_line
-  heading <- {| {:depth: '#'^+3 :} %s+ {:title: [^%nl]+ :} %nl |} -> to_title
-  h2 <- {| {:depth: '##' :} %s+ {:title: ([^#%nl]+) :} %nl |} -> to_title
-  title <- {| {:depth: '#' :} %s+ {:title: [^#%nl]+ :} %nl |} -> to_title
-  timestamp <- {|'@' {:txt: [^@|]* :} %s* '|' %s* {:datetime: [^@|]* :} '@'|} -> to_time
-  b <- {| '**' {:b: {| (ui / {[^*]})+ |} :} '**' |} -> to_b
-  ub <- {| '__' {:b: {| {[^_]+} |}  :} '__' |} -> to_b
-  i <- {| '*' {:i: [^*]+ :} '*' |} -> to_i
-  ui <- {| '_' {:i: [^_]+ :} '_' |} -> to_i
-  s <- {| '~~' {:s: [^~]+ :} '~~' |} -> to_s
-  img <- '!' (linkpat -> to_img)
-  link <- linkpat -> to_a
-  linkpat <- {| '[' {:txt: [^]%nl]+ :} ']' %s* '(' {:url: [^%s)]+ :} %s* link_title^-1 ')' |}
-  link_title <- '"' {:title:  { [^"]+ }  :} '"'
-  text <- { [^*~_%nl[`]+ }
-  hr <- { '---' / '***' / '___' } -> '<hr>'
-  quote <- {| ('>' %s+ paraline)+ |} -> to_quote
-  sl_code <- ('`' { [^`%nl]* } '`') -> to_code
-  ml_code <- {|'```' {:lang: [a-zA-Z][a-zA-Z0-9_]* :} %nl+ {:code: [^`]* :} '```'|} -> to_blockcode
+<div id="toolbar">
+  <span>Built at:<br/><time>%s</time></span>
+  <select name="sort-sections" id="sort-sections">
+    <option value="latest">Latest</option>
+    <option value="oldest">Oldest</option>
+  </select>
+</div>
   ]],
-		{
-			to_ulist = function(t)
-				local li_list = {}
-				for _, v in ipairs(t) do
-					table.insert(li_list, string.format("<li%s>%s</li>", class_str(classes.li), v))
-				end
-				return string.format("<ul%s>%s</ul>", class_str(classes.ul), table.concat(li_list))
-			end,
-			to_olist = function(t)
-				local li_list = {}
-				for _, v in ipairs(t) do
-					table.insert(li_list, string.format("<li%s>%s</li>", class_str(classes.li), v))
-				end
-				return string.format("<ol%s>%s</ol>", class_str(classes.ol), table.concat(li_list))
-			end,
-			to_time = function(t)
-				return string.format('<time%s datetime="%s">%s</time>', class_str(classes.code), t.datetime, t.txt)
-			end,
-			to_code = function(txt)
-				return string.format("<code%s>%s</code>", class_str(classes.code), txt)
-			end,
-			to_blockcode = function(t)
-				return string.format(
-					'<pre><code style="margin-bottom:1em;display:block;opacity:0.5">[%s]</code><code%s>%s</code></pre>',
-					t.lang,
-					class_str(t.lang),
-					t.code
-				)
-			end,
-			to_quote = function(t)
-				return string.format(
-					"<blockquote%s>%s</blockquote>",
-					class_str(classes.blockquote),
-					table.concat(t, " ")
-				)
-			end,
-			to_title = function(t)
-				local depth = #t.depth
-				return string.format(
-					'<h%d%s id="#%s">%s%s</h%d>',
-					depth,
-					class_str(classes["h" .. tostring(depth)]),
-					construct_id(t.title),
-					t.title,
-					construct_a({ txt = "#", url = "#" .. construct_id(t.title) }, classes),
-					depth
-				)
-			end,
-			to_a = function(t)
-				return construct_a(t, classes)
-			end,
-			to_img = function(t)
-				local lt = ""
-				if t.title then
-					lt = ' title="' .. t.title .. '"'
-				end
-				return string.format(
-					'<figure><img src="%s"%salt="%s"%s><figcaption>%s</figcaption></figure>',
-					t.url,
-					class_str(classes.img),
-					t.txt,
-					lt,
-					t.txt
-				)
-			end,
-			to_i = function(t)
-				return string.format("<i%s>%s</i>", class_str(classes.i), t.i)
-			end,
-			to_b = function(t)
-				return string.format("<b%s>%s</b>", class_str(classes.b), table.concat(t.b))
-			end,
-			to_s = function(t)
-				return string.format("<s%s>%s</s>", class_str(classes.s), t.s)
-			end,
-			concat = function(t)
-				return string.format("<p%s>%s</p>", class_str(classes.p), table.concat(t, " "))
-			end,
-			concat_line = function(t)
-				return table.concat(t)
-			end,
-			concat_section = function(t)
-				return string.format("<section%s>%s</section>", class_str(classes.section), table.concat(t))
-			end,
-			join = function(t)
-				return table.concat(t, "\n")
-			end,
-		}
+		get_utc()
 	)
-	return pattern:match(md)
+	return toolbar .. html
 end
 
-return M
+-- ===========
+-- template
+-- ===========
+
+local header_htm = function(base_url, timeline_name)
+	local template = string.format(
+		[[
+<header>
+  <nav>
+    <ul>
+      <li>
+        <button id="theme-toggler">🔆</button>
+      </li>
+      <li>
+        <a href="%s/">%s</a>
+      </li>
+      <li class="goto-homepage">
+        <span>|</span>
+        <a href="/">Homepage</a>
+      </li>
+    </ul>
+  </nav>
+</header>
+  ]],
+		base_url,
+		timeline_name
+	)
+	return template
+end
+
+local meta_htm = function(name, desc, title)
+	local meta = string.format(
+		[[
+<meta name="twitter:card" content="summary">
+<meta name="og:title" content="%s">
+<meta name="og:site_name" content="%s">
+<meta name="og:description" content="%s">
+<meta name="description" content="%s">
+  ]],
+		title,
+		name,
+		desc,
+		desc
+	)
+	return meta
+end
+
+local layout_htm = function(name, meta, title, header, main)
+	local template = string.format(
+		[[
+<html lang="en">
+  <head>
+    <meta charSet="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="/assets/feeds.css" />
+    <script src="/assets/feeds.js" defer></script>
+    %s
+    <title>%s</title>
+  </head>
+  <body data-theme="light">
+    %s
+    <main>%s</main>
+    <footer>
+      <p><em>%s</em> — Baked with <a href="https://github.com/paraparata/konyako">konyako</a></p>
+      <p>
+        ◕
+        <script>
+          document.write(new Date().getFullYear());
+        </script>
+        ◕
+      </p>
+    </footer>
+  </body>
+</html>
+  ]],
+		meta,
+		title,
+		header,
+		main,
+		name
+	)
+	return template
+end
+
+local timeline_htm = function(url, title)
+	return string.format(
+		[[
+<article>
+  <a href="%s" role="prefetch">
+    <h2>
+      %s
+    </h2>
+  </a>
+</article>
+  ]],
+		url,
+		title
+	)
+end
+
+-- =====
+-- setup
+-- =====
+local FEEDS_DIR = "./notes"
+local HTML_DIR = "../_site/notes"
+local BASE_URL = "/notes"
+local NAME = "konyako"
+local DESC = "Markdown-based static-microblogging-like generator"
+local TIMELINE = "Notes"
+
+print("\t:: konyako ::\n")
+print("[?] Check new/modified feeds markdown")
+
+for k, st in pairs(check_feeds_status("git status -s")) do
+	local arr_filepath = split(st, "/")
+	local last = arr_filepath[#arr_filepath]
+	local is_md = last:match("%.md")
+	if not is_md then
+		goto continue
+	end
+
+	local filename = last:gsub("%.md", "")
+	filename = filename:gsub('"', "")
+
+	local status = re.match(st, "%s{[MD]} / {'??'} -> 'A'")
+	if status == "D" then
+		local deleted_html = string.format("%s/%s", HTML_DIR, filename .. ".html")
+		local f = io.open(deleted_html, "rb")
+		if f then
+			os.remove(deleted_html)
+		end
+		goto continue
+	end
+
+	local md_path = string.format("%s/%s", FEEDS_DIR, filename .. ".md")
+	local main = read_md(md_path)
+	local meta = meta_htm(NAME, DESC, filename)
+	local header = header_htm(BASE_URL, TIMELINE)
+	local html = layout_htm(NAME, meta, filename, header, main)
+	local html_file = io.open(string.format("%s/%s", HTML_DIR, filename .. ".html"), "w")
+	if html_file then
+		html_file:write(html)
+		html_file:close()
+	end
+
+	print(string.format("[%s][**Done**] %s", k, filename))
+	::continue::
+end
+
+local timeline_main = string.format(
+	[[
+<div id="toolbar" style="transform: none">
+  <span>Built at:<br/><time>%s</time></span>
+</div>
+]],
+	get_utc()
+)
+local timeline_list = scandir(HTML_DIR)
+for key, value in pairs(timeline_list) do
+	if key ~= 1 and key ~= 2 and value ~= "index.html" then
+		timeline_main = timeline_main
+			.. timeline_htm(md.encode_uri(BASE_URL .. "/" .. value), string.format(string.gsub(value, ".html", "")))
+	end
+end
+
+local timeline_html =
+	layout_htm(NAME, meta_htm(NAME, DESC, TIMELINE), TIMELINE, header_htm(BASE_URL, TIMELINE), timeline_main)
+local timeline_file = io.open(string.format("%s/%s.html", HTML_DIR, "index"), "w")
+
+if timeline_file then
+	timeline_file:write(timeline_html)
+	timeline_file:close()
+	print("\n[#][**Done**] Feeds Timeline")
+end

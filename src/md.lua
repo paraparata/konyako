@@ -77,7 +77,11 @@ function M.convert(md, classes)
 		[[
   default <- {| (title / section / %nl)* |} -> join
   section <- {| h2 %nl+ (heading / list / ml_code / hr / quote / (!h2 para) / %nl)* |} -> concat_section
+  list <- ulist / olist
+  ulist <- {| ([-+] %s+ {| (formatter / { [^%nl] } )+ |} -> concat_line %nl)+ |} -> to_ulist
+  olist <- {| ([0-9]+ '.' %s+ {| (formatter / { [^%nl] } )+ |} -> concat_line %nl)+ |} -> to_olist
   para <- {| paraline+ |} -> concat
+  formatter <- link / b / i / ub / ui / s / sl_code / timestamp
   paraline <- {| (img / link / b / i / ub / ui / s / sl_code / timestamp / text)+ %nl |} -> concat_line
   heading <- {| {:depth: '#'^+3 :} %s+ {:title: [^%nl]+ :} %nl |} -> to_title
   h2 <- {| {:depth: '##' :} %s+ {:title: ([^#%nl]+) :} %nl |} -> to_title
@@ -95,11 +99,8 @@ function M.convert(md, classes)
   text <- { [^*~_%nl[`]+ }
   hr <- { '---' / '***' / '___' } -> '<hr>'
   quote <- {| ('>' %s+ paraline)+ |} -> to_quote
-  sl_code <- ('`' { [^`]* } '`') -> to_code
+  sl_code <- ('`' { [^`%nl]* } '`') -> to_code
   ml_code <- {|'```' {:lang: [a-zA-Z][a-zA-Z0-9_]* :} %nl+ {:code: [^`]* :} '```'|} -> to_blockcode
-  list <- ulist / olist
-  ulist <- {| ([-+] %s+ { [^%nl]+ } %nl)+ |} -> to_ulist
-  olist <- {| ([0-9]+ '.' %s+ { [^%nl]+ } %nl)+ |} -> to_olist
   ]],
 		{
 			to_ulist = function(t)
